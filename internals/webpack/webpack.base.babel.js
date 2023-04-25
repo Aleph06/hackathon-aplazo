@@ -113,6 +113,7 @@ module.exports = options => ({
     // drop any unreachable code.
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
+      API_KEY_AI: JSON.stringify(process.env.API_KEY_AI),
     }),
   ]),
   resolve: {
