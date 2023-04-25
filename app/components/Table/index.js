@@ -20,17 +20,6 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
 });
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-];
-
 function Table(props) {
   const classes = useStyles();
 
@@ -43,19 +32,6 @@ function Table(props) {
     return null;
   };
 
-  const getCell = data => {
-    console.log(data);
-    if (Object.keys(data).length !== 0) {
-      data.map(keyData => (
-        <TableRow key="test">
-          {Object.values(keyData).map(value => (
-            <TableCell>{value}</TableCell>
-          ))}
-        </TableRow>
-      ));
-    }
-    return null;
-  };
   return (
     <TableContainer component={Paper}>
       <TableMaterial className={classes.table} aria-label="caption table">
