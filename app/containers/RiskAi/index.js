@@ -58,7 +58,7 @@ export function RiskAi() {
   const classes = useStyles();
 
   const configuration = new Configuration({
-    apiKey: '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',
+    apiKey: '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',
   });
   const openai = new OpenAIApi(configuration);
 
