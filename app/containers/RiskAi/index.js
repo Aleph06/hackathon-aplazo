@@ -52,12 +52,13 @@ export function RiskAi() {
 
   const [text, setText] = React.useState('');
   const [query, setQuery] = React.useState('');
+  const [varification, checkQuery] = React.useState('');
   const [dataTable, setDataTable] = React.useState('');
 
   const classes = useStyles();
 
   const configuration = new Configuration({
-    apiKey: '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',
+    apiKey: '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',
   });
   const openai = new OpenAIApi(configuration);
 
@@ -122,6 +123,25 @@ export function RiskAi() {
                     })
                     .then(response => {
                       setQuery(response.data.choices[0].text);
+                      openai
+                        .createCompletion({
+                          model: 'text-davinci-003',
+                          prompt: `""Explicame este query: ${
+                            response.data.choices[0].text
+                          }"`,
+                          temperature: 0,
+                          max_tokens: 150,
+                          top_p: 1,
+                          frequency_penalty: 0,
+                          presence_penalty: 0,
+                          stop: ['#', ';'],
+                        })
+                        .catch(error => {
+                          console.log(error);
+                        })
+                        .then(responseQuery => {
+                          checkQuery(responseQuery.data.choices[0].text);
+                        });
                     });
                 }}
               >
@@ -141,7 +161,8 @@ export function RiskAi() {
             <br />
             <Grid item>
               <Typography variant="h6" gutterBottom>
-                SELECT {query}
+                Query: {query} <br />
+                <br /> Explicación: {varification.replace('Este query', 'Esta busqueda')}
               </Typography>
               <Grid item>
                 <Button
