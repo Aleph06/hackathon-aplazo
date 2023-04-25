@@ -110,7 +110,12 @@ export function RiskAi() {
                   openai
                     .createCompletion({
                       model: 'text-davinci-003',
-                      prompt: `"### Postgres SQL tables, with their properties:\n#\n#customer (id, login, password, created, updated, email, email_activated, phone_activated, conekta_id, two_factor, kyc_token, kyc_verified, customer_state_code, account_id, merchant_id, defaulted, comments, banned, can_use_vc, is_replenishment, created_at, updated_at, updated_by_dbuser)\n# customer_info(id, customer_id, date_birth, address, state, curp, created, updated, name, last_name, second_last_name, city, date_of_birth, gender, post_code, neighbourhood, state_birth, rfc, created_at, updated_at, updated_by_dbuser  )\n# loan(id, discount_title, discount_price, total_price, success_url, error_url, status, installments, merchant_id, customer_id, shop_id, cart_id, shipping_title, shipping_price, taxes_title, taxes_price, creation_date, cart_url, discount_aplazo, web_hook_url, fee_merchant, fee_tax_merchant, total_settlement, total_loan_amount, installment_amount, first_installment_extra_amount, attempted_payments, interest_loan_amount, external_order_id, updated, is_paid_on_time, amount_to_replenishment, created_at, updated_at, updated_by_dbuser, interest_rate, is_nextquincena, warned_partner)\n# buyer(id, loan_id, first_name, last_name, address_line, email, phone, postal_code, created_at, updated_at, updated_by_dbuser\n# customer_kushki(id, customer_id, subscription_id, card_number, card_name, status, bin, cat_card_brand_code, platform, created_at, updated_at, update_date, updated_by_dbuser\n# customer_risk_status(id, customer_id, status, created_at, updated_at, credit_tier, credit_limit, credit_tier_online, credit_limit_online, updated_by_dbuser, update_reason, model_id)\n# customer_ebanx(id, customer_id, card_number, card_name, status, bin, token, created_at, updated_at, update_date, updated_by_dbuser)\n#\n##${text}}"`,
+                      prompt: `"### Postgres SQL tables, with their properties:\n#\n
+                      #customer (id, login, password, created, updated, email, email_activated, phone_activated, conekta_id, two_factor, kyc_token, kyc_verified, customer_state_code, account_id, merchant_id, defaulted, comments, banned, can_use_vc, is_replenishment, created_at, updated_at, updated_by_dbuser)\n# 
+                      customer_info(id, customer_id, date_birth, address, state, curp, created, updated, name, last_name, second_last_name, city, date_of_birth, gender, post_code, neighbourhood, state_birth, rfc, created_at, updated_at, updated_by_dbuser  )\n# 
+                      loan(id, discount_title, discount_price, total_price, success_url, error_url, status, installments, merchant_id, customer_id, shop_id, cart_id, shipping_title, shipping_price, taxes_title, taxes_price, creation_date, cart_url, discount_aplazo, web_hook_url, fee_merchant, fee_tax_merchant, total_settlement, total_loan_amount, installment_amount, first_installment_extra_amount, attempted_payments, interest_loan_amount, external_order_id, updated, is_paid_on_time, amount_to_replenishment, created_at, updated_at, updated_by_dbuser, interest_rate, is_nextquincena, warned_partner)\n# 
+                      buyer(id, loan_id, first_name, last_name, address_line, email, phone, postal_code, created_at, updated_at, updated_by_dbuser)\n# 
+                      transaction (id, loan_id, status, scheduled_payment_date, amount, payment_date, firstpaymentby, updated, created_at, updated_at , installment_hash)\n#\n##${text}}"`,
                       temperature: 0,
                       max_tokens: 150,
                       top_p: 1,
@@ -162,27 +167,34 @@ export function RiskAi() {
             <Grid item>
               <Typography variant="h6" gutterBottom>
                 Query: {query} <br />
-                <br /> Explicación: {varification.replace('Este query', 'Esta busqueda')}
+                <br /> Explicación:{' '}
+                {varification.replace('Este query', 'Esta busqueda')}
               </Typography>
               <Grid item>
                 <Button
                   variant="contained"
                   onClick={() => {
-                    openai
-                      .createCompletion({
-                        model: 'text-davinci-003',
-                        prompt: `${query} dame el ejemplo de la tabla en json hasta 1 registros`,
-                        temperature: 0.5,
-                        max_tokens: 300,
-                        top_p: 1,
-                        frequency_penalty: 1,
-                        presence_penalty: 1,
-                      })
-                      .catch(error => {
-                        console.log(error);
-                      })
-                      .then(response => {
-                        setDataTable(response.data.choices[0].text);
+                    const requestOptions = {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        query: query.replace('\n\n', ''),
+                      }),
+                    };
+                    fetch(
+                      'https://d3gwjc2ohl.execute-api.us-west-1.amazonaws.com',
+                      requestOptions,
+                    )
+                      .then(response => response.json())
+                      .then(data => {
+                        const rows = data.map(row =>
+                          row.reduce((previous, current, idx) => {
+                            const newValue = {};
+                            newValue[`header_${idx}`] = current;
+                            return { ...previous, ...newValue };
+                          }, {}),
+                        );
+                        setDataTable(JSON.stringify(rows));
                       });
                   }}
                 >
@@ -192,9 +204,9 @@ export function RiskAi() {
             </Grid>
           </Grid>
           <Grid item style={{ marginTop: '20px' }}>
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="h6" gutterBottom>
               {dataTable !== '' ? dataTable : ''}
-            </Typography>
+            </Typography> */}
           </Grid>
           <Grid container justify="center" style={{ margin: '50px' }}>
             <Grid item xs={10} sm={10}>
