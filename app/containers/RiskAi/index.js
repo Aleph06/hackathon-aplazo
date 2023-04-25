@@ -64,7 +64,7 @@ export function RiskAi() {
   const handleChange = event => {
     setText(event.target.value);
   };
-  console.log(process.env.API_KEY_AI);
+
   return (
     <div>
       <AppBar position="static">
@@ -84,83 +84,50 @@ export function RiskAi() {
       </AppBar>
       <Grid container spacing={2} style={{ padding: '50px' }}>
         <Grid item xs={12} sm={12}>
-          <Typography variant="title" gutterBottom>
-            ### Postgres SQL tables, with their properties:
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <Typography variant="title" gutterBottom>
-            # # Employee(id, name, department_id, age)
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <Typography variant="title" gutterBottom>
-            # Department(id, name, address)
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <Typography variant="title" gutterBottom>
-            # Salary_Payments(id,employee_id, amount, date)
+          <Typography variant="h5" gutterBottom>
+            Buscar información en la base de datos
           </Typography>
         </Grid>
         <Grid container style={{ marginTop: '20px' }}>
           <Grid item xs={12} sm={12}>
-            <Typography variant="title" gutterBottom>
-              ### Modelo-inteligencia: code-davinci-002 (Translate natural
-              language to SQL queries. ){' '}
-            </Typography>
-            <a
-              href="https://beta.openai.com/examples/default-sql-translate"
-              target="_blank"
-            >
-              Más información
-            </a>
-            <Grid style={{ marginTop: '10px' }}>
-              <Typography
-                variant="subtitle2"
-                gutterBottom
-                style={{ fontSize: '18px' }}
-              >
-                ### Es una versión beta, se tiene que estructurar la sentencia
-                lo más correcto posible, para tener un resultado más acertado.
-              </Typography>
-            </Grid>
             <Grid style={{ marginTop: '20px' }}>
               <TextField
                 fullWidth
-                label="Text"
+                label=""
                 id="fullWidth"
                 variant="filled"
                 onChange={handleChange}
               />
             </Grid>
-            <Button
-              variant="contained"
-              style={{ marginTop: '20px' }}
-              onClick={() => {
-                setQuery('');
-                setDataTable('');
-                openai
-                  .createCompletion({
-                    model: 'text-davinci-003',
-                    prompt: `### Postgres SQL tables, with their properties:\n#\n# Employee(id, name, department_id)\n# Department(id, name, address)\n# ${text}\nSELECT`,
-                    temperature: 0,
-                    max_tokens: 150,
-                    top_p: 1,
-                    frequency_penalty: 0,
-                    presence_penalty: 0,
-                    stop: ['#', ';'],
-                  })
-                  .catch(error => {
-                    console.log(error);
-                  })
-                  .then(response => {
-                    setQuery(response.data.choices[0].text);
-                  });
-              }}
-            >
-              Enviar
-            </Button>
+            <Grid container justify="flex-end">
+              <Button
+                variant="contained"
+                style={{ marginTop: '20px' }}
+                onClick={() => {
+                  setQuery('');
+                  setDataTable('');
+                  openai
+                    .createCompletion({
+                      model: 'text-davinci-003',
+                      prompt: `"### Postgres SQL tables, with their properties:\n#\n#customer (id, login, password, created, updated, email, email_activated, phone_activated, conekta_id, two_factor, kyc_token, kyc_verified, customer_state_code, account_id, merchant_id, defaulted, comments, banned, can_use_vc, is_replenishment, created_at, updated_at, updated_by_dbuser)\n# customer_info(id, customer_id, date_birth, address, state, curp, created, updated, name, last_name, second_last_name, city, date_of_birth, gender, post_code, neighbourhood, state_birth, rfc, created_at, updated_at, updated_by_dbuser  )\n# loan(id, discount_title, discount_price, total_price, success_url, error_url, status, installments, merchant_id, customer_id, shop_id, cart_id, shipping_title, shipping_price, taxes_title, taxes_price, creation_date, cart_url, discount_aplazo, web_hook_url, fee_merchant, fee_tax_merchant, total_settlement, total_loan_amount, installment_amount, first_installment_extra_amount, attempted_payments, interest_loan_amount, external_order_id, updated, is_paid_on_time, amount_to_replenishment, created_at, updated_at, updated_by_dbuser, interest_rate, is_nextquincena, warned_partner)\n# buyer(id, loan_id, first_name, last_name, address_line, email, phone, postal_code, created_at, updated_at, updated_by_dbuser\n# customer_kushki(id, customer_id, subscription_id, card_number, card_name, status, bin, cat_card_brand_code, platform, created_at, updated_at, update_date, updated_by_dbuser\n# customer_risk_status(id, customer_id, status, created_at, updated_at, credit_tier, credit_limit, credit_tier_online, credit_limit_online, updated_by_dbuser, update_reason, model_id)\n# customer_ebanx(id, customer_id, card_number, card_name, status, bin, token, created_at, updated_at, update_date, updated_by_dbuser)\n#\n##${text}}"`,
+                      temperature: 0,
+                      max_tokens: 150,
+                      top_p: 1,
+                      frequency_penalty: 0,
+                      presence_penalty: 0,
+                      stop: ['#', ';'],
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    })
+                    .then(response => {
+                      setQuery(response.data.choices[0].text);
+                    });
+                }}
+              >
+                Buscar
+              </Button>
+            </Grid>
           </Grid>
           <Grid item xs={12} sm={12}>
             <Grid item>
@@ -176,21 +143,6 @@ export function RiskAi() {
               <Typography variant="h6" gutterBottom>
                 SELECT {query}
               </Typography>
-              <br />
-              <br />
-              <Grid item xs={12} sm={12} style={{ marginTop: '20px' }}>
-                <Typography variant="title" gutterBottom>
-                  ### Modelo-inteligencia: text-davinci-003 (Create simple SQL
-                  queries. ){' '}
-                </Typography>
-                <a
-                  href="https://beta.openai.com/examples/default-sql-request"
-                  target="_blank"
-                >
-                  Más información
-                </a>
-              </Grid>
-              <br />
               <Grid item>
                 <Button
                   variant="contained"
@@ -225,7 +177,7 @@ export function RiskAi() {
           </Grid>
           <Grid container justify="center" style={{ margin: '50px' }}>
             <Grid item xs={10} sm={10}>
-              <Table />
+              <Table data={dataTable !== '' ? JSON.parse(dataTable) : []} />
             </Grid>
           </Grid>
         </Grid>
